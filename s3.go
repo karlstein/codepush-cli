@@ -17,10 +17,10 @@ import (
 var s3Client *s3.Client
 
 func InitS3() {
-	s3Endpoint := GetEnv("S3_ENDPOINT", "")
-	s3AccessKey := GetEnv("S3_ACCESS_KEY", "")
-	s3SecretKey := GetEnv("S3_SECRET_KEY", "")
-	s3Location := GetEnv("S3_LOCATION", "")
+	s3Endpoint := GetEnv("S3_ENDPOINT", "http://localhost:9000")
+	s3AccessKey := GetEnv("S3_ACCESS_KEY", "admin")
+	s3SecretKey := GetEnv("S3_SECRET_KEY", "password")
+	s3Location := GetEnv("S3_LOCATION", "us-east-1")
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(s3AccessKey, s3SecretKey, "")),
@@ -57,7 +57,7 @@ func UploadFile(filePath string, fileName string) error {
 	progressReader := progressbar.NewReader(file, bar)
 
 	_, err = s3Client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(GetEnv("S3_BUCKET", "codepush-updates")),
+		Bucket: aws.String(GetEnv("S3_BUCKET", "code-push")),
 		Key:    aws.String(fileName),
 		Body:   progressReader.Reader, // Now correctly implements io.Reader
 	})

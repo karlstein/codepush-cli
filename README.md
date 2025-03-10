@@ -9,4 +9,4 @@
 ## 🚀 Usage
 ### 1️⃣ Build the CLI
 ```sh
-go build -o codepush-cli
+make build
