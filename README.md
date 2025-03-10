@@ -7,6 +7,8 @@
 ✅ Supports Android & iOS  
 
 ## 🚀 Usage
-### 1️⃣ Build the CLI
+### 1️⃣ Clone this repo
+### 2️⃣ Ensure you have GOPATH in your environment variables
+### 3️⃣ Build the CLI
 ```sh
 make build
