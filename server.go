@@ -8,16 +8,14 @@ import (
 )
 
 // Notify CodePush Server
-func NotifyServer(version, fileName string, mandatory bool, environment string) error {
-	serverURL := GetEnv("CODEPUSH_SERVER_URL", "http://localhost:8080")
-
-	checksum, err := ComputeSHA256(fileName)
-	if err != nil {
-		return err
+func notifyServer(version, fileName, environment, serverURL, checksum, platform string, mandatory bool) error {
+	if len(serverURL) == 0 {
+		serverURL = getEnv("CODEPUSH_SERVER_URL", "http://localhost:8080")
 	}
 
 	data := map[string]interface{}{
 		"version":     version,
+		"platform":    platform,
 		"fileName":    fileName,
 		"mandatory":   mandatory,
 		"checksum":    checksum,
@@ -40,8 +38,8 @@ func NotifyServer(version, fileName string, mandatory bool, environment string) 
 }
 
 // Rollback a Version
-func RollbackVersion(environment string) error {
-	serverURL := GetEnv("CODEPUSH_SERVER_URL", "http://localhost:8080")
+func rollbackVersion(environment string) error {
+	serverURL := getEnv("CODEPUSH_SERVER_URL", "http://localhost:8080")
 
 	data := map[string]string{"environment": environment}
 	jsonData, _ := json.Marshal(data)

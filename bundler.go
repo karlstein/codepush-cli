@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func BundleReactNative(platform, outputDir string) (string, error) {
+func bundleReactNative(platform, outputDir string) (string, error) {
 	bundlePath := filepath.Join(outputDir, fmt.Sprintf("index.%s.bundle", platform))
 
 	cmd := exec.Command("npx", "react-native", "bundle",

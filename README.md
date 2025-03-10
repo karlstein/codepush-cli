@@ -8,7 +8,7 @@
 
 ## 🚀 Usage
 #### 1️⃣ Clone this repo
-#### 2️⃣ Ensure you have GOPATH in your environment variables
+#### 2️⃣ Ensure you have GOPATH set in your environment variables
 #### 3️⃣ Build the CLI
 ```sh
 make build
