@@ -12,7 +12,7 @@ const platform = _platform();
 const arch = _arch();
 
 const ghPath = "https://github.com/karlstein/codepush-cli/releases/download";
-const currVersion = "v0.2.7";
+const currVersion = "v0.2.6";
 let binaryName = "codepush-cli";
 let releaseName = "";
 
