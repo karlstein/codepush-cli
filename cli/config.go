@@ -25,12 +25,12 @@ func loadEnv(envFile string) {
 	}
 }
 
-func getEnv(key, fallback string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return fallback
-}
+// func getEnv(key, fallback string) string {
+// 	if value, exists := os.LookupEnv(key); exists {
+// 		return value
+// 	}
+// 	return fallback
+// }
 
 func dir(envFile string) (path string, dfltEnv bool) {
 	currentDir, err := os.Getwd()

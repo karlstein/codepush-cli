@@ -12,4 +12,4 @@ node_modules/
 # Makefile
 
 *.tar.gz
-.env
+# .env

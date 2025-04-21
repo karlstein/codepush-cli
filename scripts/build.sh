@@ -1,3 +1,4 @@
+#!/bin/sh
 cd cli
 echo "Download go modules..."
 go mod download

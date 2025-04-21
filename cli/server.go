@@ -4,13 +4,30 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
 )
 
 // Notify CodePush Server
-func notifyServer(version, fileName, environment, serverURL, checksum, platform, deploymentKey string, mandatory bool) error {
+func notifyServer(version, filePath, fileName, environment, serverURL, checksum, platform, deploymentKey string, mandatory bool) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
 	if len(serverURL) == 0 {
-		serverURL = getEnv("CODEPUSH_SERVER_URL", "http://localhost:8080")
+		serverURL = "http://localhost:8080"
+	}
+
+	var buf bytes.Buffer
+	writer := multipart.NewWriter(&buf)
+
+	jsonPart, err := writer.CreateFormField("metadata")
+	if err != nil {
+		panic(err)
 	}
 
 	update := map[string]any{
@@ -28,9 +45,30 @@ func notifyServer(version, fileName, environment, serverURL, checksum, platform,
 	}
 
 	jsonData, _ := json.Marshal(data)
-	resp, err := http.Post(fmt.Sprintf("%s/update", serverURL), "application/json", bytes.NewBuffer(jsonData))
+	jsonPart.Write(jsonData)
+
+	filePart, err := writer.CreateFormFile("file", fileName)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = io.Copy(filePart, file)
+	if err != nil {
+		panic(err)
+	}
+
+	writer.Close()
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/update", serverURL), &buf)
 	if err != nil {
 		return err
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
 	}
 	defer resp.Body.Close()
 
@@ -44,7 +82,7 @@ func notifyServer(version, fileName, environment, serverURL, checksum, platform,
 
 // Rollback a Version
 func rollbackVersion(environment string) error {
-	serverURL := getEnv("CODEPUSH_SERVER_URL", "http://localhost:8080")
+	serverURL := "http://localhost:8080"
 
 	data := map[string]string{"environment": environment}
 	jsonData, _ := json.Marshal(data)

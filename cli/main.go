@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	initS3()
+	// initS3()
 
 	var rootCmd = &cobra.Command{Use: "codepush-cli"}
 
@@ -27,8 +27,14 @@ func main() {
 			outputDir, _ := cmd.Flags().GetString("output-dir")
 			serverURL, _ := cmd.Flags().GetString("server-url")
 			deploymentKey, _ := cmd.Flags().GetString("deployment-key")
+			// s3Endpoint, _ := cmd.Flags().GetString("s3-endpoint")
+			// s3AccessKey, _ := cmd.Flags().GetString("s3-access-key")
+			// s3SecretKey, _ := cmd.Flags().GetString("s3-secret-key")
+			// s3Location, _ := cmd.Flags().GetString("s3-localtion")
 			uniqueKey, _ := GenerateSecureToken(8)
 			// outputDir := "./build"
+
+			// initS3(s3Endpoint, s3AccessKey, s3SecretKey, s3Location)
 
 			loadEnv(envpath)
 
@@ -49,15 +55,15 @@ func main() {
 				log.Fatalf("❌ Failed to check file integrity: %v", err)
 			}
 
-			fmt.Println("📤 Uploading bundle to S3...")
-			err = uploadFile(bundlePath, fileName)
-			if err != nil {
-				log.Fatalf("❌ Failed to upload: %v", err)
-			}
+			// fmt.Println("📤 Uploading bundle to S3...")
+			// err = uploadFile(bundlePath, fileName)
+			// if err != nil {
+			// 	log.Fatalf("❌ Failed to upload: %v", err)
+			// }
 
 			notifyLog := fmt.Sprintf("🔔 Notifying CodePush server at %s...", serverURL)
 			fmt.Println(notifyLog)
-			err = notifyServer(version, fileName, environment, serverURL, checksum, platform, deploymentKey, mandatory)
+			err = notifyServer(version, bundlePath, fileName, environment, serverURL, checksum, platform, deploymentKey, mandatory)
 			if err != nil {
 				log.Fatalf("❌ Failed to notify server: %v", err)
 			}
@@ -67,11 +73,15 @@ func main() {
 	pushCmd.Flags().StringP("platform", "p", "", "Target platform (android/ios)")
 	pushCmd.Flags().StringP("version", "v", "", "Version number (e.g., 1.0.2)")
 	pushCmd.Flags().BoolP("mandatory", "m", false, "Is this a mandatory update?")
-	pushCmd.Flags().StringP("environment", "e", getEnv("DEFAULT_ENVIRONMENT", "staging"), "")
+	pushCmd.Flags().StringP("environment", "e", "Local", "")
 	pushCmd.Flags().StringP("env-path", "n", "", "")
 	pushCmd.Flags().StringP("output-dir", "o", "./code-push", "")
 	pushCmd.Flags().StringP("server-url", "s", "", "Codepush Server URL")
 	pushCmd.Flags().StringP("deployment-key", "d", "", "Deployment Key")
+	// pushCmd.Flags().StringP("s3-endpoint", "ep", "", "s3-endpoint id mandatory")
+	// pushCmd.Flags().StringP("s3-access-key", "ak", "", "s3-access-key id mandatory")
+	// pushCmd.Flags().StringP("s3-secret-key", "sk", "", "s3-secret-key id mandatory")
+	// pushCmd.Flags().StringP("s3-localtion", "lc", "", "s3-localtion id mandatory")
 
 	// Rollback command
 	var rollbackCmd = &cobra.Command{
@@ -80,6 +90,12 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			environment, _ := cmd.Flags().GetString("environment")
 			envpath, _ := cmd.Flags().GetString("env-path")
+			// s3Endpoint, _ := cmd.Flags().GetString("s3-endpoint")
+			// s3AccessKey, _ := cmd.Flags().GetString("s3-access-key")
+			// s3SecretKey, _ := cmd.Flags().GetString("s3-secret-key")
+			// s3Location, _ := cmd.Flags().GetString("s3-localtion")
+
+			// initS3(s3Endpoint, s3AccessKey, s3SecretKey, s3Location)
 
 			loadEnv(envpath)
 
@@ -90,8 +106,12 @@ func main() {
 		},
 	}
 
-	rollbackCmd.Flags().StringP("environment", "e", getEnv("DEFAULT_ENVIRONMENT", "staging"), "")
+	rollbackCmd.Flags().StringP("environment", "e", "Local", "")
 	rollbackCmd.Flags().StringP("env-path", "n", "", "")
+	rollbackCmd.Flags().StringP("s3-endpoint", "ep", "", "s3-endpoint id mandatory")
+	rollbackCmd.Flags().StringP("s3-access-key", "ak", "", "s3-access-key id mandatory")
+	rollbackCmd.Flags().StringP("s3-secret-key", "sk", "", "s3-secret-key id mandatory")
+	rollbackCmd.Flags().StringP("s3-localtion", "lc", "", "s3-localtion id mandatory")
 
 	rootCmd.AddCommand(pushCmd, rollbackCmd)
 
