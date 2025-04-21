@@ -1,12 +1,8 @@
 #!/usr/bin/env node
-import { spawn } from "child_process";
-import { join, dirname } from "path";
-import { platform } from "os";
-import { fileURLToPath } from "url";
+const { spawn } = require("child_process");
+const { join } = require("path");
+const { platform } = require("os");
 
-// Get __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const binaryName = platform() === "win32" ? "codepush-cli.exe" : "codepush-cli";
 const binaryPath = join(__dirname, "./bin/", binaryName);
 

@@ -1,6 +1,5 @@
 {
   "name": "codepush-cli",
-  "type": "module",
   "version": "0.2.6",
   "description": "codepush-cli tool written in Go",
   "main": "index.js",

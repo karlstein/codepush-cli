@@ -1,12 +1,7 @@
-import { get } from "https";
-import { createWriteStream, mkdir } from "fs";
-import { join, dirname } from "path";
-import { platform as _platform, arch as _arch } from "os";
-import { fileURLToPath } from "url";
-
-// Get __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { get } = require("https");
+const { createWriteStream, mkdir } = require("fs");
+const { join } = require("path");
+const { platform: _platform, arch: _arch } = require("os");
 
 const platform = _platform();
 const arch = _arch();
