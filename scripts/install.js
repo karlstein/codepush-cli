@@ -3,7 +3,6 @@ import { createWriteStream } from "fs";
 import { join, dirname } from "path";
 import { platform as _platform, arch as _arch } from "os";
 import { chmodSync } from "fs";
-import * as dotenv from "dotenv";
 import { fileURLToPath } from "url";
 
 // Get __dirname in ESM
@@ -17,7 +16,7 @@ const platform = _platform();
 const arch = _arch();
 
 const ghPath = "https://github.com/karlstein/codepush-cli/releases/download";
-const currVersion = process.env.VERSION;
+const currVersion = "v0.2.6";
 let binaryName = "codepush-cli";
 let releaseName = "";
 
