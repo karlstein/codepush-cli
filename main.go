@@ -26,6 +26,8 @@ func main() {
 			envpath, _ := cmd.Flags().GetString("env-path")
 			outputDir, _ := cmd.Flags().GetString("output-dir")
 			serverURL, _ := cmd.Flags().GetString("server-url")
+			deploymentKey, _ := cmd.Flags().GetString("deployment-key")
+			uniqueKey, _ := GenerateSecureToken(8)
 			// outputDir := "./build"
 
 			loadEnv(envpath)
@@ -41,7 +43,7 @@ func main() {
 			}
 			fmt.Println("✅ Bundle created:", bundlePath)
 
-			fileName := "updates/" + environment + "-" + version + "-" + platform + ".bundle"
+			fileName := "updates/" + environment + "-" + version + "-" + uniqueKey + "." + platform + ".bundle"
 			checksum, err := computeSHA256(bundlePath)
 			if err != nil {
 				log.Fatalf("❌ Failed to check file integrity: %v", err)
@@ -55,7 +57,7 @@ func main() {
 
 			notifyLog := fmt.Sprintf("🔔 Notifying CodePush server at %s...", serverURL)
 			fmt.Println(notifyLog)
-			err = notifyServer(version, fileName, environment, serverURL, checksum, platform, mandatory)
+			err = notifyServer(version, fileName, environment, serverURL, checksum, platform, deploymentKey, mandatory)
 			if err != nil {
 				log.Fatalf("❌ Failed to notify server: %v", err)
 			}
@@ -69,6 +71,7 @@ func main() {
 	pushCmd.Flags().StringP("env-path", "n", "", "")
 	pushCmd.Flags().StringP("output-dir", "o", "./code-push", "")
 	pushCmd.Flags().StringP("server-url", "s", "", "Codepush Server URL")
+	pushCmd.Flags().StringP("deployment-key", "d", "", "Deployment Key")
 
 	// Rollback command
 	var rollbackCmd = &cobra.Command{

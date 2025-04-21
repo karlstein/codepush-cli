@@ -8,18 +8,23 @@ import (
 )
 
 // Notify CodePush Server
-func notifyServer(version, fileName, environment, serverURL, checksum, platform string, mandatory bool) error {
+func notifyServer(version, fileName, environment, serverURL, checksum, platform, deploymentKey string, mandatory bool) error {
 	if len(serverURL) == 0 {
 		serverURL = getEnv("CODEPUSH_SERVER_URL", "http://localhost:8080")
 	}
 
-	data := map[string]interface{}{
+	update := map[string]any{
 		"version":     version,
 		"platform":    platform,
 		"fileName":    fileName,
 		"mandatory":   mandatory,
 		"checksum":    checksum,
 		"environment": environment,
+	}
+
+	data := map[string]any{
+		"update":        update,
+		"deploymentKey": deploymentKey,
 	}
 
 	jsonData, _ := json.Marshal(data)
