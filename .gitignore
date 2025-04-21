@@ -1,0 +1,15 @@
+.idea/*
+
+.git/*
+
+bin
+deployment
+
+node_modules/
+
+
+# !config/env/.env
+# Makefile
+
+*.tar.gz
+.env

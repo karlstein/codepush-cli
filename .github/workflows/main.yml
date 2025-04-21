@@ -31,4 +31,4 @@ jobs:
         tag_name: ${{ github.ref }}
         draft: false
         prerelease: false
-        artifacts: "./bin/codepush-cli"
+        artifacts: "./bin/codepush-cli-linux-x64,./bin/codepush-cli-darwin-x64,./bin/codepush-cli-win-x64.exe"
