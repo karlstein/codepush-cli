@@ -1,8 +1,7 @@
 import { get } from "https";
-import { createWriteStream } from "fs";
+import { createWriteStream, mkdir } from "fs";
 import { join, dirname } from "path";
 import { platform as _platform, arch as _arch } from "os";
-import { chmodSync } from "fs";
 import { fileURLToPath } from "url";
 
 // Get __dirname in ESM
@@ -13,7 +12,7 @@ const platform = _platform();
 const arch = _arch();
 
 const ghPath = "https://github.com/karlstein/codepush-cli/releases/download";
-const currVersion = "v0.2.6";
+const currVersion = "v0.2.7";
 let binaryName = "codepush-cli";
 let releaseName = "";
 
@@ -30,27 +29,62 @@ if (platform === "darwin" && arch === "x64") {
 }
 
 const downloadUrl = `${ghPath}/${currVersion}/${releaseName}`;
-const outputDir = join(__dirname, "..", "lib");
+const outputDir = join(__dirname, "..", "bin");
+
+mkdir(outputDir, (err) => {
+  if (err) {
+    return console.error(err);
+  }
+  console.log("Directory created successfully!");
+});
+
 const outputPath = join(outputDir, binaryName);
 
-// Download binary
-get(downloadUrl, (res) => {
-  if (res.statusCode !== 200) {
-    console.error(`Failed to download binary: ${res.statusCode}`);
-    process.exit(1);
-  }
+function downloadAsset(assetUrl) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(assetUrl);
+    const headers = {
+      "User-Agent": "Node.js",
+      Accept: "application/octet-stream", // Required for binary downloads
+    };
 
-  const file = createWriteStream(outputPath);
-  res.pipe(file);
+    const followRedirect = (response) => {
+      if ([301, 302, 307].includes(response.statusCode)) {
+        // GitHub returns a 302 redirect for asset downloads
+        const redirectUrl = response.headers.location;
+        get(redirectUrl, followRedirect).on("error", reject);
+      } else {
+        // console.table(response);
+        // Stream response to file
+        const file = createWriteStream(outputPath);
+        response.pipe(file);
+        file.on("finish", () => {
+          file.close();
+          resolve();
+        });
+      }
+    };
 
-  file.on("finish", () => {
-    file.close();
-    if (platform !== "win32") {
-      chmodSync(outputPath, 0o755);
-    }
-    console.log(`Downloaded CLI to ${outputPath}`);
+    // Initial request to GitHub's asset endpoint
+    get(
+      {
+        hostname: url.hostname,
+        path: url.pathname,
+        headers,
+        timeout: 20000,
+      },
+      followRedirect
+    ).on("error", reject);
   });
-}).on("error", (err) => {
-  console.error(`Error downloading binary: ${err.message}`);
-  process.exit(1);
-});
+}
+
+(async () => {
+  try {
+    // Download the asset
+    console.log(`Downloading ${releaseName}...`);
+    await downloadAsset(downloadUrl); // Use the asset's API URL (supports auth)
+    console.log("Download complete!");
+  } catch (error) {
+    console.error("Error:", error);
+  }
+})();
