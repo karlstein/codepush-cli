@@ -9,9 +9,6 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load .env file
-dotenv.config({ path: join(__dirname, "..", ".env") });
-
 const platform = _platform();
 const arch = _arch();
 
