@@ -21,7 +21,7 @@ jobs:
         go-version: '1.22.1'
 
     - name: Build cli
-      run: make build GOPATH=.
+      run: make build
 
     - name: Create Github Release
       uses: ncipollo/release-action@v1
