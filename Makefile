@@ -9,4 +9,12 @@ else
 	@echo run local build script
 	@bash ./scripts/build-local.sh
 endif
+
+set-version:
+ifdef VERSION
+	@echo set version
+	@bash ./scripts/set-version.sh $(VERSION)
+else
+	@echo VERSION should be mandatory
+endif
 	

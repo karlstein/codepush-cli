@@ -1,13 +1,14 @@
 import { get } from "https";
 import { createWriteStream } from "fs";
-import { join } from "path";
+import { join, dirname } from "path";
 import { platform as _platform, arch as _arch } from "os";
 import { chmodSync } from "fs";
 import * as dotenv from "dotenv";
+import { fileURLToPath } from "url";
 
 // Get __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
 // Load .env file
 dotenv.config({ path: join(__dirname, "..", ".env") });
