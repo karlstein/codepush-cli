@@ -1,0 +1,34 @@
+name: "Release codepush-cli"
+
+on:
+  push:
+    tags:        
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Go 1.22.1
+      uses: actions/setup-go@v5
+      with:
+        # Semantic version range syntax or exact version of Go
+        go-version: '1.22.1'
+
+    - name: Build cli
+      run: make build GOPATH=.
+
+    - name: Create Github Release
+      uses: ncipollo/release-action@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        draft: false
+        prerelease: false
+        artifacts: "./bin/codepush-cli"
