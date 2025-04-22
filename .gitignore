@@ -4,7 +4,7 @@
 
 bin
 deployment
-dist/*
+# dist/*
 
 node_modules/
 

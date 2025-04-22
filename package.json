@@ -1,6 +1,6 @@
 {
   "name": "codepush-cli",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "codepush-cli tool written in Go",
   "type": "module",
   "main": "dist/index.js",
@@ -8,8 +8,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "prepublish": "npm run build",
-    "postinstall": "npm run build"
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.540.0",
