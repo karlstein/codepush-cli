@@ -99,15 +99,13 @@ function downloadAsset(assetUrl) {
     logger(`Downloading ${releaseName}...`);
     // const res = await downloadAsset(downloadUrl); // Use the asset's API URL (supports auth)
 
-    // if (res)
-
-    downloadAsset(downloadUrl)
-      .then((e) => {
-        logger(`Download response ${e}`);
-      })
-      .catch((err) => {
-        logger(`Download err ${err}`);
-      });
+    // downloadAsset(downloadUrl)
+    //   .then((e) => {
+    //     logger(`Download response ${e}`);
+    //   })
+    //   .catch((err) => {
+    //     logger(`Download err ${err}`);
+    //   });
 
     console.error("Download complete!");
   } catch (error) {
