@@ -39,6 +39,15 @@ mkdir(outputDir, (err) => {
 });
 
 const outputPath = join(outputDir, binaryName);
+const isWin = process.platform === "win32";
+
+const logger = (msg) => {
+  if (isWin) {
+    process.stdout.write(`${msg}\n`);
+  } else {
+    console.error(msg);
+  }
+};
 
 function downloadAsset(assetUrl) {
   console.error(`downloadAsset ${assetUrl}...`);
@@ -51,6 +60,10 @@ function downloadAsset(assetUrl) {
     };
 
     const followRedirect = (response) => {
+      logger(
+        `followRedirect response ${response.statusCode} - ${response.headers.location}`
+      );
+
       if ([301, 302, 307].includes(response.statusCode)) {
         // GitHub returns a 302 redirect for asset downloads
         const redirectUrl = response.headers.location;
@@ -80,11 +93,22 @@ function downloadAsset(assetUrl) {
   });
 }
 
-(async () => {
+(() => {
   try {
     // Download the asset
-    console.error(`Downloading ${releaseName}...`);
-    await downloadAsset(downloadUrl); // Use the asset's API URL (supports auth)
+    logger(`Downloading ${releaseName}...`);
+    // const res = await downloadAsset(downloadUrl); // Use the asset's API URL (supports auth)
+
+    // if (res)
+
+    downloadAsset(downloadUrl)
+      .then((e) => {
+        logger(`Download response ${e}`);
+      })
+      .catch((err) => {
+        logger(`Download err ${err}`);
+      });
+
     console.error("Download complete!");
   } catch (error) {
     console.error("Error:", error);
