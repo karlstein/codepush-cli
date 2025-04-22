@@ -4,7 +4,18 @@
   "description": "codepush-cli tool written in Go",
   "type": "module",
   "main": "index.js",
-  "engines": {
-    "node": ">=16"
+  "scripts": {
+    "postinstall": "node ./scripts/install.js"
+  },
+  "files": [
+    "package-lock.json",
+    "bin",
+    "scripts"
+  ],
+  "bin": {
+    "codepush-cli": "lib/index.js"
+  },
+  "engine": {
+    "node": ">=18.0.0"
   }
 }
