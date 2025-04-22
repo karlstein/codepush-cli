@@ -4,6 +4,10 @@
   "description": "codepush-cli tool written in Go",
   "type": "module",
   "main": "index.js",
+  "scripts": {
+    "prepare": "echo 'prepare'",
+    "postinstall": "echo 'postinstall'"
+  },
   "files": [
     "package-lock.json",
     "bin",
