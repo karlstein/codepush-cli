@@ -43,7 +43,7 @@ const computeSHA256 = async (filePath) => {
 };
 const notifyServer = async (params) => {
     try {
-        const response = await axios.post(params.serverUrl, {
+        const res = await axios.post(params.serverUrl, {
             version: params.version,
             fileName: params.fileName,
             environment: params.environment,
@@ -53,7 +53,7 @@ const notifyServer = async (params) => {
             mandatory: params.mandatory,
             bundle: fs.readFileSync(params.bundlePath, "base64"),
         });
-        if (response.status !== 200) {
+        if (res.status !== 200) {
             throw new Error("Server returned non-200 status");
         }
     }
