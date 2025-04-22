@@ -3,20 +3,24 @@
   "version": "0.2.7",
   "description": "codepush-cli tool written in Go",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "echo 'prepare'",
-    "postinstall": "echo 'postinstall'"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prepublish": "npm run build"
   },
-  "files": [
-    "package-lock.json",
-    "bin",
-    "scripts"
-  ],
-  "bin": {
-    "codepush-cli": "lib/index.js"
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.540.0",
+    "axios": "^1.6.0",
+    "commander": "^12.0.0",
+    "dotenv": "^16.3.0",
+    "fs-extra": "^11.0.0"
   },
-  "engine": {
-    "node": ">=18.0.0"
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.0",
+    "@types/fs-extra": "^11.0.0",
+    "@types/crypto-js": "^4.2.0"
   }
 }
