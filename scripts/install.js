@@ -12,7 +12,7 @@ const platform = _platform();
 const arch = _arch();
 
 const ghPath = "https://github.com/karlstein/codepush-cli/releases/download";
-const currVersion = "v0.2.7";
+const currVersion = "v0.2.6";
 let binaryName = "codepush-cli";
 let releaseName = "";
 
@@ -41,6 +41,8 @@ mkdir(outputDir, (err) => {
 const outputPath = join(outputDir, binaryName);
 
 function downloadAsset(assetUrl) {
+  console.error(`downloadAsset ${assetUrl}...`);
+
   return new Promise((resolve, reject) => {
     const url = new URL(assetUrl);
     const headers = {
@@ -81,9 +83,9 @@ function downloadAsset(assetUrl) {
 (async () => {
   try {
     // Download the asset
-    console.debug(`Downloading ${releaseName}...`);
-    // await downloadAsset(downloadUrl); // Use the asset's API URL (supports auth)
-    console.debug("Download complete!");
+    console.error(`Downloading ${releaseName}...`);
+    await downloadAsset(downloadUrl); // Use the asset's API URL (supports auth)
+    console.error("Download complete!");
   } catch (error) {
     console.error("Error:", error);
   }
