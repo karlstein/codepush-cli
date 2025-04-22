@@ -1,20 +1,16 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const commander_1 = require("commander");
-const child_process_1 = require("child_process");
-const util_1 = require("util");
-const crypto_1 = __importDefault(require("crypto"));
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const axios_1 = __importDefault(require("axios"));
+#!/usr/bin/env node
+import { Command } from "commander";
+import { exec } from "child_process";
+import { promisify } from "util";
+import crypto from "crypto";
+import fs from "fs";
+import path from "path";
+import axios from "axios";
 // import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'; // For rollback
-const execAsync = (0, util_1.promisify)(child_process_1.exec);
+const execAsync = promisify(exec);
 // Helper functions
 const generateSecureToken = (length) => {
-    return crypto_1.default
+    return crypto
         .randomBytes(Math.ceil(length / 2))
         .toString("hex")
         .slice(0, length);
@@ -29,16 +25,16 @@ const bundleReactNative = async (platform, outputDir) => {
     --platform ${platform} \
     --dev false \
     --entry-file index.js \
-    --bundle-output ${path_1.default.join(outputDir, `index.${platform}.bundle`)} \
+    --bundle-output ${path.join(outputDir, `index.${platform}.bundle`)} \
     --assets-dest ${outputDir}`;
     const { stderr } = await execAsync(command);
     if (stderr)
         throw new Error(stderr);
-    return path_1.default.join(outputDir, `${platform}.bundle`);
+    return path.join(outputDir, `${platform}.bundle`);
 };
 const computeSHA256 = async (filePath) => {
-    const hash = crypto_1.default.createHash("sha256");
-    const stream = fs_1.default.createReadStream(filePath);
+    const hash = crypto.createHash("sha256");
+    const stream = fs.createReadStream(filePath);
     return new Promise((resolve, reject) => {
         stream.on("data", (data) => hash.update(data));
         stream.on("end", () => resolve(hash.digest("hex")));
@@ -47,7 +43,7 @@ const computeSHA256 = async (filePath) => {
 };
 const notifyServer = async (params) => {
     try {
-        const response = await axios_1.default.post(params.serverUrl, {
+        const response = await axios.post(params.serverUrl, {
             version: params.version,
             fileName: params.fileName,
             environment: params.environment,
@@ -55,7 +51,7 @@ const notifyServer = async (params) => {
             platform: params.platform,
             deploymentKey: params.deploymentKey,
             mandatory: params.mandatory,
-            bundle: fs_1.default.readFileSync(params.bundlePath, "base64"),
+            bundle: fs.readFileSync(params.bundlePath, "base64"),
         });
         if (response.status !== 200) {
             throw new Error("Server returned non-200 status");
@@ -82,7 +78,7 @@ const notifyServer = async (params) => {
 //   await s3Client.send(deleteCommand);
 // };
 // CLI Setup
-const program = new commander_1.Command();
+const program = new Command();
 program
     .name("codepush-cli")
     .description("CodePush CLI tool for managing updates");
