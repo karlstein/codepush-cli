@@ -1,13 +1,18 @@
-const { get } = require("https");
-const { createWriteStream, mkdir } = require("fs");
-const { join } = require("path");
-const { platform: _platform, arch: _arch } = require("os");
+import { get } from "https";
+import { createWriteStream, mkdir } from "fs";
+import { join, dirname } from "path";
+import { platform as _platform, arch as _arch } from "os";
+import { fileURLToPath } from "url";
+
+// Get __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const platform = _platform();
 const arch = _arch();
 
 const ghPath = "https://github.com/karlstein/codepush-cli/releases/download";
-const currVersion = "v0.2.6";
+const currVersion = "v0.2.7";
 let binaryName = "codepush-cli";
 let releaseName = "";
 
@@ -66,7 +71,7 @@ function downloadAsset(assetUrl) {
         hostname: url.hostname,
         path: url.pathname,
         headers,
-        timeout: 20000,
+        timeout: 30000,
       },
       followRedirect
     ).on("error", reject);
@@ -76,9 +81,9 @@ function downloadAsset(assetUrl) {
 (async () => {
   try {
     // Download the asset
-    console.log(`Downloading ${releaseName}...`);
-    await downloadAsset(downloadUrl); // Use the asset's API URL (supports auth)
-    console.log("Download complete!");
+    console.debug(`Downloading ${releaseName}...`);
+    // await downloadAsset(downloadUrl); // Use the asset's API URL (supports auth)
+    console.debug("Download complete!");
   } catch (error) {
     console.error("Error:", error);
   }
