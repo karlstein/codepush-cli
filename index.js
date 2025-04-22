@@ -4,7 +4,7 @@ import { join, dirname } from "path";
 import { platform } from "os";
 import { fileURLToPath } from "url";
 import { existsSync } from "fs";
-export { installBinary } from "./scripts/install";
+export { installBinary } from "./scripts/install.js";
 
 // Get __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
