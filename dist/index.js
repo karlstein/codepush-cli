@@ -43,7 +43,7 @@ const computeSHA256 = async (filePath) => {
 };
 const notifyServer = async (params) => {
     try {
-        const res = await axios.post(params.serverUrl, {
+        const res = await axios.post(`${params.serverUrl}/update`, {
             version: params.version,
             fileName: params.fileName,
             environment: params.environment,
