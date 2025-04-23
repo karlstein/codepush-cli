@@ -4,13 +4,18 @@
   "description": "codepush-cli tool",
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "bin": {
-    "codepush-cli": "./dist/index.js"
-  },
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build-dist": "tsc",
+    "start-dist": "node dist/index.js"
+  },
+  "files": [
+    "dist",
+    "package-lock.json",
+    "package.json",
+    "scripts"
+  ],
+  "bin": {
+    "codepush-cli": "dist/index.js"
   },
   "dependencies": {
     "axios": "^1.6.0",
@@ -20,8 +25,7 @@
     "@types/node": "^20.11.0",
     "typescript": "^5.3.0"
   },
-  "files": [
-    "dist",
-    "package.json"
-  ]
+  "engine": {
+    "node": ">=18.0.0"
+  }
 }
