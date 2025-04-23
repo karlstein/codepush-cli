@@ -30,7 +30,7 @@ const bundleReactNative = async (platform, outputDir) => {
     const { stderr } = await execAsync(command);
     if (stderr)
         throw new Error(stderr);
-    return path.join(outputDir, `${platform}.bundle`);
+    return path.join(outputDir, `index.${platform}.bundle`);
 };
 const computeSHA256 = async (filePath) => {
     const hash = crypto.createHash("sha256");
@@ -101,7 +101,7 @@ program
         console.log("🚀 Bundling React Native app...");
         const bundlePath = await bundleReactNative(options.platform, options.outputDir);
         console.log("✅ Bundle created:", bundlePath);
-        const fileName = `updates/${options.environment}-${options.version}-${uniqueKey}.${options.platform}.bundle`;
+        const fileName = `updates/${options.environment}-${options.version}-${uniqueKey}.index.${options.platform}.bundle`;
         const checksum = await computeSHA256(bundlePath);
         console.log(`🔔 Notifying CodePush server at ${options.serverUrl}...`);
         await notifyServer({

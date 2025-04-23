@@ -70,7 +70,7 @@ const bundleReactNative = async (
 
   const { stderr } = await execAsync(command);
   if (stderr) throw new Error(stderr);
-  return path.join(outputDir, `${platform}.bundle`);
+  return path.join(outputDir, `index.${platform}.bundle`);
 };
 
 const computeSHA256 = async (filePath: string): Promise<string> => {
@@ -163,7 +163,7 @@ program
       );
       console.log("✅ Bundle created:", bundlePath);
 
-      const fileName = `updates/${options.environment}-${options.version}-${uniqueKey}.${options.platform}.bundle`;
+      const fileName = `updates/${options.environment}-${options.version}-${uniqueKey}.index.${options.platform}.bundle`;
       const checksum = await computeSHA256(bundlePath);
 
       console.log(`🔔 Notifying CodePush server at ${options.serverUrl}...`);

@@ -5,8 +5,8 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build-dist": "tsc",
-    "start-dist": "node dist/index.js"
+    "build-cli": "tsc",
+    "start-cli": "node dist/index.js"
   },
   "files": [
     "dist",
