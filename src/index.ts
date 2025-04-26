@@ -9,6 +9,7 @@ import path from "path";
 import axios from "axios";
 import FormData from "form-data";
 // import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'; // For rollback
+import "dotenv/config";
 
 const execAsync = promisify(exec);
 
@@ -215,6 +216,11 @@ program
       process.exit(1);
     }
   });
+
+// Check version
+program.option("-v, --version", "version").action(async () => {
+  console.log(`Codepush CLI version ${process.env.VERSION}`);
+});
 
 // Rollback command
 // program
