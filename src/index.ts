@@ -7,6 +7,7 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import axios from "axios";
+import FormData from "form-data";
 // import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'; // For rollback
 
 const execAsync = promisify(exec);
@@ -27,7 +28,7 @@ interface NotifyServerParams {
   bundlePath: string;
   fileName: string;
   environment: string;
-  serverUrl: string;
+  serverUrl?: string;
   checksum: string;
   platform: string;
   deploymentKey: string;
@@ -84,30 +85,57 @@ const computeSHA256 = async (filePath: string): Promise<string> => {
   });
 };
 
-const notifyServer = async (params: NotifyServerParams): Promise<void> => {
+export async function notifyServer({
+  version,
+  bundlePath: filePath,
+  fileName,
+  environment,
+  serverUrl: serverURL = "http://localhost:8080",
+  checksum,
+  platform,
+  deploymentKey,
+  mandatory,
+}: NotifyServerParams): Promise<void> {
   try {
-    const res = await axios.post(`${params.serverUrl}/update`, {
-      version: params.version,
-      fileName: params.fileName,
-      environment: params.environment,
-      checksum: params.checksum,
-      platform: params.platform,
-      deploymentKey: params.deploymentKey,
-      mandatory: params.mandatory,
-      bundle: fs.readFileSync(params.bundlePath, "base64"),
+    const fileStream = fs.createReadStream(filePath);
+    const form = new FormData();
+
+    const metadata = {
+      update: {
+        version,
+        platform,
+        fileName,
+        mandatory,
+        checksum,
+        environment,
+      },
+      deploymentKey,
+    };
+
+    form.append("metadata", JSON.stringify(metadata));
+    form.append("file", fileStream, fileName);
+
+    const response = await axios.post(`${serverURL}/update`, form, {
+      headers: {
+        ...form.getHeaders(),
+      },
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      timeout: 30000,
     });
 
-    if (res.status !== 200) {
-      throw new Error("Server returned non-200 status");
+    if (response.status !== 200) {
+      throw new Error(
+        `Failed to notify server, status code: ${response.status}`
+      );
     }
-  } catch (error) {
-    throw new Error(
-      `Server notification failed: ${
-        error instanceof Error ? error.message : error
-      }`
-    );
+
+    console.log("✅ CodePush server notified successfully!");
+  } catch (err) {
+    console.error("❌ Error notifying server:", err);
+    throw err;
   }
-};
+}
 
 // const rollbackVersion = async (options: RollbackOptions): Promise<void> => {
 //   // Implement your S3 rollback logic here
