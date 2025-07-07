@@ -105,7 +105,7 @@ program
     .description("Push a new update to the CodePush server")
     .requiredOption("-p, --platform <platform>", "Target platform (android/ios)")
     .requiredOption("-v, --version <version>", "Version number (e.g., 1.0.2)")
-    .requiredOption("-m, --mandatory", "Is this a mandatory update?", false)
+    .option("-m, --mandatory", "Is this a mandatory update?", false)
     .requiredOption("-e, --environment <environment>", "Environment name", "Local")
     .requiredOption("-n, --env-path <path>", "Path to environment file")
     .requiredOption("-o, --output-dir <dir>", "Output directory", "./code-push")
@@ -140,9 +140,10 @@ program
     }
 });
 // Check version
-program.option("-v, --version", "version").action(async () => {
-    console.log(`Codepush CLI version ${process.env.VERSION}`);
-});
+program
+    .name("string-util")
+    .description("CLI to some JavaScript string utilities")
+    .version(process.env.VERSION || "");
 // Rollback command
 // program
 //   .command('rollback')
