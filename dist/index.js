@@ -60,7 +60,8 @@ export async function notifyServer({ version, bundlePath: filePath, fileName, en
         };
         form.append("metadata", JSON.stringify(metadata));
         form.append("file", fileStream, fileName);
-        const response = await axios.post(`${serverURL}/update`, form, {
+        console.log("metadata", metadata);
+        const response = await axios.post(`${serverURL}update`, form, {
             headers: {
                 ...form.getHeaders(),
             },
@@ -105,13 +106,14 @@ program
     .description("Push a new update to the CodePush server")
     .requiredOption("-p, --platform <platform>", "Target platform (android/ios)")
     .requiredOption("-v, --version <version>", "Version number (e.g., 1.0.2)")
-    .option("-m, --mandatory", "Is this a mandatory update?", false)
-    .requiredOption("-e, --environment <environment>", "Environment name", "Local")
+    .requiredOption("-e, --environment <environment>", "Environment name")
     .requiredOption("-n, --env-path <path>", "Path to environment file")
     .requiredOption("-o, --output-dir <dir>", "Output directory", "./code-push")
     .requiredOption("-s, --server-url <url>", "CodePush Server URL")
     .requiredOption("-d, --deployment-key <key>", "Deployment Key")
+    .requiredOption("-m, --mandatory", "Is this a mandatory update?")
     .action(async (options) => {
+    console.log("codepush-cli push...");
     try {
         const uniqueKey = generateSecureToken(8);
         // loadEnv(options.envPath);
@@ -140,10 +142,10 @@ program
     }
 });
 // Check version
-program
-    .name("string-util")
-    .description("CLI to some JavaScript string utilities")
-    .version(process.env.VERSION || "");
+// program
+//   .name("string-util")
+//   .description("CLI to some JavaScript string utilities")
+//   .version("v0.2.11");
 // Rollback command
 // program
 //   .command('rollback')

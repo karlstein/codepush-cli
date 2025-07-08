@@ -1,6 +1,6 @@
 {
   "name": "codepush-cli",
-  "version": "0.2.10",
+  "version": "0.2.12",
   "description": "codepush-cli tool",
   "type": "module",
   "main": "dist/index.js",
