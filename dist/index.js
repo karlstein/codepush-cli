@@ -61,10 +61,9 @@ export async function notifyServer({ version, bundlePath: filePath, fileName, en
         form.append("metadata", JSON.stringify(metadata));
         form.append("file", fileStream, fileName);
         console.log("metadata", metadata);
-        const response = await axios.post(`${serverURL}update`, form, {
-            headers: {
-                ...form.getHeaders(),
-            },
+        const completeServerUrl = `${serverURL}/update`.replace("//", "/");
+        const response = await axios.post(completeServerUrl, form, {
+            headers: { ...form.getHeaders() },
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
             timeout: 30000,

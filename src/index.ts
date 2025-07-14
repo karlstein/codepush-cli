@@ -118,10 +118,9 @@ export async function notifyServer({
 
     console.log("metadata", metadata);
 
-    const response = await axios.post(`${serverURL}update`, form, {
-      headers: {
-        ...form.getHeaders(),
-      },
+    const completeServerUrl = `${serverURL}/update`.replace("//", "/");
+    const response = await axios.post(completeServerUrl, form, {
+      headers: { ...form.getHeaders() },
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       timeout: 30000,
