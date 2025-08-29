@@ -67,8 +67,8 @@ const bundleReactNative = async (
     --platform ${platform} \
     --dev false \
     --entry-file index.js \
-    --bundle-output ${path.join(outputDir, `index.${platform}.bundle`)} \
-    --assets-dest ${outputDir}`;
+    --bundle-output ${path.join(outputDir, `index.${platform}.bundle`)}`;
+  // --assets-dest ${outputDir}`;
 
   const { stderr } = await execAsync(command);
   if (stderr) throw new Error(stderr);
