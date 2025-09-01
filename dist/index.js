@@ -7,8 +7,8 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 import FormData from "form-data";
-// import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'; // For rollback
 import "dotenv/config";
+import archiver from "archiver";
 const execAsync = promisify(exec);
 // Helper functions
 const generateSecureToken = (length) => {
@@ -23,16 +23,37 @@ const generateSecureToken = (length) => {
 //   }
 // };
 const bundleReactNative = async (platform, outputDir) => {
+    const outputDataDir = path.join(outputDir, "data");
+    const fileName = `bundle.${platform}.zip`;
+    const outputPath = path.join(outputDir, fileName);
     const command = `react-native bundle \
     --platform ${platform} \
     --dev false \
     --entry-file index.js \
-    --bundle-output ${path.join(outputDir, `index.${platform}.bundle`)}`;
-    // --assets-dest ${outputDir}`;
+    --bundle-output ${path.join(outputDataDir, `index.${platform}.bundle`)} \
+    --assets-dest ${outputDataDir}`;
     const { stderr } = await execAsync(command);
     if (stderr)
         throw new Error(stderr);
-    return path.join(outputDir, `index.${platform}.bundle`);
+    const output = fs.createWriteStream(outputPath);
+    const archive = archiver("zip", { zlib: { level: 9 } });
+    const done = new Promise((resolve, reject) => {
+        output.on("close", () => resolve(undefined));
+        archive.on("warning", (err) => {
+            console.warn("archiver warning:", err);
+        });
+        archive.on("error", reject);
+    });
+    archive.pipe(output);
+    archive.directory(outputDataDir, false);
+    // await tar
+    //   .c({ gzip: true, file: outputPath, cwd: outputDataDir }, ["."])
+    //   .then(() => {
+    //     console.log(`Bundle tar.gz created: ${outputPath}`);
+    //   });
+    await archive.finalize();
+    await done;
+    return { outputPath, fileName };
 };
 const computeSHA256 = async (filePath) => {
     const hash = crypto.createHash("sha256");
@@ -43,13 +64,13 @@ const computeSHA256 = async (filePath) => {
         stream.on("error", reject);
     });
 };
-export async function notifyServer({ version, bundlePath: filePath, fileName, environment, serverUrl: serverURL = "http://localhost:8080", checksum, platform, deploymentKey, mandatory, }) {
+export async function notifyServer({ appVersion, bundlePath: filePath, fileName, environment, serverUrl: serverURL = "http://localhost:8080", checksum, platform, deploymentKey, mandatory, }) {
     try {
         const fileStream = fs.createReadStream(filePath);
         const form = new FormData();
         const metadata = {
             update: {
-                version,
+                version: appVersion,
                 platform,
                 fileName,
                 mandatory,
@@ -104,7 +125,7 @@ program
     .command("push")
     .description("Push a new update to the CodePush server")
     .requiredOption("-p, --platform <platform>", "Target platform (android/ios)")
-    .requiredOption("-v, --version <version>", "Version number (e.g., 1.0.2)")
+    .requiredOption("-av, --appVersion <appVersion>", "Version number (e.g., 1.0.2)")
     .requiredOption("-e, --environment <environment>", "Environment name")
     .requiredOption("-n, --env-path <path>", "Path to environment file")
     .requiredOption("-o, --output-dir <dir>", "Output directory", "./code-push")
@@ -117,14 +138,14 @@ program
         const uniqueKey = generateSecureToken(8);
         // loadEnv(options.envPath);
         console.log("🚀 Bundling React Native app...");
-        const bundlePath = await bundleReactNative(options.platform, options.outputDir);
-        console.log("✅ Bundle created:", bundlePath);
-        const fileName = `updates/${options.environment}-${options.version}-${uniqueKey}.index.${options.platform}.bundle`;
-        const checksum = await computeSHA256(bundlePath);
+        const { outputPath, fileName: bundleFileName } = await bundleReactNative(options.platform, options.outputDir);
+        console.log("✅ Bundle created:", outputPath);
+        const fileName = `updates/${options.environment}-${options.appVersion}-${uniqueKey}.${bundleFileName}`;
+        const checksum = await computeSHA256(outputPath);
         console.log(`🔔 Notifying CodePush server at ${options.serverUrl}...`);
         await notifyServer({
-            version: options.version,
-            bundlePath,
+            appVersion: options.appVersion,
+            bundlePath: outputPath,
             fileName,
             environment: options.environment,
             serverUrl: options.serverUrl,
@@ -141,10 +162,10 @@ program
     }
 });
 // Check version
-// program
-//   .name("string-util")
-//   .description("CLI to some JavaScript string utilities")
-//   .version("v0.2.11");
+program
+    .name("string-util")
+    .description("CLI to some JavaScript string utilities")
+    .version("v0.2.15");
 // Rollback command
 // program
 //   .command('rollback')

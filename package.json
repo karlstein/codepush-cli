@@ -1,6 +1,6 @@
 {
   "name": "codepush-cli",
-  "version": "0.2.14",
+  "version": "v0.2.15",
   "description": "codepush-cli tool",
   "type": "module",
   "main": "dist/index.js",
@@ -18,6 +18,9 @@
     "codepush-cli": "dist/index.js"
   },
   "dependencies": {
+    "@types/archiver": "^6.0.3",
+    "@types/fs-extra": "^11.0.4",
+    "archiver": "^7.0.1",
     "axios": "^1.6.0",
     "commander": "^12.0.0",
     "dotenv": "^16.5.0",
